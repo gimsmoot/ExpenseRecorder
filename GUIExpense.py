@@ -238,7 +238,88 @@ def update_table():
     except:
         print('no file')
 
+
+
+
+
+
+########## right click menu #################
+def Editrecord():
+    POPUP=Toplevel()
+    POPUP.geometry('500x400')
+
+    #------text1--------
+    L = ttk.Label(POPUP,text='รายการค่าใช้จ่าย',font=FONT1).pack()
+    v_expense = StringVar()
+    # StringVar() คือ ตัวแปรพิเศษสำหรับเก็บข้อมูลใน GUI
+    E1 = ttk.Entry(POPUP,textvariable=v_expense,font=FONT1)
+    E1.pack()
+    #-------------------
+
+    #------text2--------
+    L = ttk.Label(POPUP,text='ราคา (บาท)',font=FONT1).pack()
+    v_price = StringVar()
+    # StringVar() คือ ตัวแปรพิเศษสำหรับเก็บข้อมูลใน GUI
+    E2 = ttk.Entry(POPUP,textvariable=v_price,font=FONT1)
+    E2.pack()
+    #-------------------
+
+    #------text3--------
+    L = ttk.Label(POPUP,text='จำนวน (ชิ้น)',font=FONT1).pack()
+    v_quantity = StringVar()
+    # StringVar() คือ ตัวแปรพิเศษสำหรับเก็บข้อมูลใน GUI
+    E3 = ttk.Entry(POPUP,textvariable=v_quantity,font=FONT1)
+    E3.pack()
+    #-------------------
+
+    saveicon = PhotoImage(file='save.png')
+
+    def Edit():
+        olddata = alltransaction[str(transactionid)]
+        v1 = v_expense.get()
+        v2 = float(v_price.get())
+        v3 = float(v_quantity.get())
+        total = v2 * v3
+        newdata = [olddata[0],olddata[1],v1,v2,v3,total]
+        alltransaction[str(transactionid)] = newdata
+        UpdateCSV()
+        update_table()
+        POPUP.destroy()
+
+
+    B2 = ttk.Button(POPUP,text='Save',command=Edit,image=saveicon,compound='left')
+    B2.pack(ipadx=50,ipady=20,pady=20)
+
+
+
+    select = resulttable.selection()
+    data = resulttable.item(select)
+    data = data['values']
+    transactionid = data[0]
+
+    v_expense.set(data[2])
+    v_price.set(data[3])
+    v_quantity.set(data[4])
+
+
+    POPUP.mainloop()
+
+
+
+rightclick = Menu(GUI,tearoff=0)
+rightclick.add_command(label = 'Edit',command=Editrecord)
+rightclick.add_command(label='Delete',command=DeleteRecord)
+
+
+def menupopup (even):
+    rightclick.post(even.x_root,even.y_root)
+
+resulttable.bind('<Button-3>',menupopup)
+
+
 update_table()
 
 GUI.bind('<Tab>',lambda x: E2.focus())
 GUI.mainloop()
+
+
